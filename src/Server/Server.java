@@ -85,11 +85,14 @@ public class Server {
 
             // Hiển thị thông báo tương ứng trên console của Server
             if (result.equals(Boss.LOGIN_BOSS)) {
-                System.out.println("Boss đã đăng nhập: " );
+                System.out.println("Boss đã đăng nhập" );
+                System.out.println("-----------------------------------------");
             } else if (result.equals(Boss.LOGIN_USER)) {
-                System.out.println("User đã đăng nhập: " );
+                System.out.println("User đã đăng nhập " );
+                System.out.println("-----------------------------------------");
             } else if (result.equals(Boss.LOGIN_FAILED)) {
-                System.out.println("Đăng nhập thất bại: " );
+                System.out.println("Đăng nhập thất bại " );
+                System.out.println("-----------------------------------------");
             }
         }
 

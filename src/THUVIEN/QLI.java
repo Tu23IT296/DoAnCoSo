@@ -29,6 +29,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import SQL.DatabaseConnection;
+import java.awt.Color;
 
 public class QLI extends JFrame {
 
@@ -56,10 +57,12 @@ public class QLI extends JFrame {
     }
 
     public QLI() {
+    	setBackground(new Color(64, 224, 208));
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 1400, 500);
         contentPane = new JPanel();
+        contentPane.setBackground(new Color(64, 224, 208));
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         setContentPane(contentPane);
@@ -67,7 +70,7 @@ public class QLI extends JFrame {
 
         // Tạo JScrollPane để chứa bảng BangSach
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(490, 43, 636, 410);
+        scrollPane.setBounds(490, 43, 636, 431);
         contentPane.add(scrollPane);
 
         BangSach = new JTable();
@@ -150,6 +153,7 @@ public class QLI extends JFrame {
 
      // Trong phần khởi tạo của lớp QLI():
         JButton THEM = new JButton("THÊM");
+        THEM.setBackground(new Color(178, 34, 34));
      // Trong phần ActionListener của nút "THÊM"
         THEM.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -203,6 +207,7 @@ public class QLI extends JFrame {
 
      // Trong phần khởi tạo của lớp QLI():
         JButton btnNewButton_1 = new JButton("XÓA");
+        btnNewButton_1.setBackground(new Color(218, 165, 32));
         btnNewButton_1.setFont(new Font("Times New Roman", Font.BOLD, 20));
         btnNewButton_1.setBounds(10, 145, 225, 35);
         contentPane.add(btnNewButton_1);
@@ -252,6 +257,7 @@ public class QLI extends JFrame {
 
      // Trong phần khởi tạo của lớp QLI():
         JButton btnNewButton_2 = new JButton("SỬA");
+        btnNewButton_2.setBackground(new Color(0, 0, 205));
         btnNewButton_2.setFont(new Font("Times New Roman", Font.BOLD, 20));
         btnNewButton_2.setBounds(10, 190, 225, 35);
         contentPane.add(btnNewButton_2);
@@ -308,6 +314,7 @@ public class QLI extends JFrame {
         textField.setColumns(10);
 
         JButton btnNewButton = new JButton("TÌM KIẾM");
+        btnNewButton.setBackground(new Color(144, 238, 144));
         btnNewButton.setFont(new Font("Times New Roman", Font.BOLD, 16));
         btnNewButton.setBounds(957, 10, 159, 23);
         contentPane.add(btnNewButton);
@@ -324,6 +331,7 @@ public class QLI extends JFrame {
 
         
         JButton btnLmMi = new JButton("LÀM MỚI");
+        btnLmMi.setBackground(new Color(144, 238, 144));
         btnLmMi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 displayData("SELECT * FROM books");
@@ -334,6 +342,7 @@ public class QLI extends JFrame {
         contentPane.add(btnLmMi);
         
         AnhBia = new JLabel("New label");
+        AnhBia.setBackground(new Color(255, 255, 255));
         AnhBia.setBounds(1126, 32, 250, 431);
         contentPane.add(AnhBia);
         
@@ -362,10 +371,11 @@ public class QLI extends JFrame {
 
         // Đảm bảo rằng bảng BMUON được đưa vào JScrollPane và hiển thị đúng vị trí và kích thước
         JScrollPane scrollPaneBMUON = new JScrollPane(BMUON);
-        scrollPaneBMUON.setBounds(10, 235, 460, 135);
+        scrollPaneBMUON.setBounds(10, 235, 460, 183);
         contentPane.add(scrollPaneBMUON);
         
         JButton LMBANGMUON = new JButton("LÀM MỚI");
+        LMBANGMUON.setBackground(new Color(144, 238, 144));
      // Trong phần khởi tạo của lớp QLI():
         LMBANGMUON.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -374,68 +384,8 @@ public class QLI extends JFrame {
             }
         });
         LMBANGMUON.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        LMBANGMUON.setBounds(10, 380, 225, 35);
+        LMBANGMUON.setBounds(10, 428, 225, 35);
         contentPane.add(LMBANGMUON);
-        
-        JButton TRASACH = new JButton("ĐÃ TRẢ");
-        TRASACH.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Lấy chỉ mục của hàng được chọn trong bảng BMUON
-                int selectedRow = BMUON.getSelectedRow();
-                if (selectedRow != -1) {
-                    // Lấy ID của sách từ hàng được chọn
-                    String userId = String.valueOf(BMUON.getValueAt(selectedRow, 0));
-                    int bookId = Integer.parseInt(BMUON.getValueAt(selectedRow, 1).toString());
-                    
-                    try {
-                        // Kết nối đến cơ sở dữ liệu
-                        Connection conn = DatabaseConnection.getConnection();
-                        PreparedStatement pstmt = conn.prepareStatement("DELETE FROM UserBooks WHERE UserId = ? AND BookId = ?");
-                        pstmt.setString(1, userId);
-                        pstmt.setInt(2, bookId);
-                        
-                        // Thực thi truy vấn xóa
-                        int rowsDeleted = pstmt.executeUpdate();
-                        
-                        // Kiểm tra xem dữ liệu đã được xóa thành công hay không
-                        if (rowsDeleted > 0) {
-                            // Hiển thị thông báo xóa thành công
-                            JOptionPane.showMessageDialog(contentPane, "Sách đã được trả thành công.");
-                            
-                            // Cập nhật lại dữ liệu trong bảng hiển thị
-                            displayUserBooks();
-                        } else {
-                            // Hiển thị thông báo lỗi nếu không xóa được dữ liệu
-                            JOptionPane.showMessageDialog(contentPane, "Trả sách không thành công.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                        }
-                        
-                        // Đóng kết nối
-                        pstmt.close();
-                        conn.close();
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
-                } else {
-                    // Hiển thị thông báo khi không có hàng nào được chọn
-                    JOptionPane.showMessageDialog(contentPane, "Vui lòng chọn một sách để trả.", "Thông báo", JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-        TRASACH.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        TRASACH.setBounds(245, 380, 225, 35);
-        contentPane.add(TRASACH);
-        
-        JButton CHAT = new JButton("CHAT");
-        CHAT.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Open the CHATUSER window
-                CHATBOSS chatWindow = new CHATBOSS();
-                chatWindow.setVisible(true);
-            }
-        });
-        CHAT.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        CHAT.setBounds(10, 425, 225, 35);
-        contentPane.add(CHAT);
 
         // Trong phương thức displayData(String query):
         String selectedGenre = (String) THELOAI.getSelectedItem();
@@ -554,4 +504,5 @@ public class QLI extends JFrame {
             e.printStackTrace();
         }
     }
+
 }

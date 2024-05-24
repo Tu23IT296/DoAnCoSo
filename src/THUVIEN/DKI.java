@@ -20,6 +20,7 @@ import javax.swing.SwingConstants;
 import java.awt.EventQueue;
 import java.awt.Font;
 import javax.swing.JPasswordField;
+import java.awt.Color;
 
 public class DKI extends JFrame {
 
@@ -48,6 +49,7 @@ public class DKI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 540, 460);
         contentPane = new JPanel();
+        contentPane.setBackground(new Color(0, 255, 255));
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         setContentPane(contentPane);
@@ -66,31 +68,37 @@ public class DKI extends JFrame {
         contentPane.add(TENTAIKHOAN);
         
         TDN = new JTextField();
+        TDN.setFont(new Font("Times New Roman", Font.BOLD, 20));
         TDN.setBounds(212, 71, 214, 50);
         contentPane.add(TDN);
         TDN.setColumns(10);
         
         SDT = new JTextField();
+        SDT.setFont(new Font("Times New Roman", Font.BOLD, 20));
         SDT.setColumns(10);
         SDT.setBounds(212, 130, 214, 50);
         contentPane.add(SDT);
         
         JButton DANGKI = new JButton("Đăng kí");
+        DANGKI.setBackground(new Color(144, 238, 144));
         DANGKI.setFont(new Font("Times New Roman", Font.BOLD, 25));
 
         DANGKI.setBounds(116, 370, 204, 50);
         contentPane.add(DANGKI);
         
         EM = new JTextField();
+        EM.setFont(new Font("Times New Roman", Font.BOLD, 20));
         EM.setColumns(10);
         EM.setBounds(212, 190, 214, 50);
         contentPane.add(EM);
         
         MK = new JPasswordField();
+        MK.setFont(new Font("Times New Roman", Font.BOLD, 20));
         MK.setBounds(212, 250, 214, 50);
         contentPane.add(MK);
         
         XACNHAN = new JPasswordField();
+        XACNHAN.setFont(new Font("Times New Roman", Font.BOLD, 20));
         XACNHAN.setBounds(212, 310, 214, 50);
         contentPane.add(XACNHAN);
         
@@ -119,6 +127,7 @@ public class DKI extends JFrame {
         contentPane.add(XACNHANMATKHAU);
         
         JButton btnShowPassword = new JButton("Show");
+        btnShowPassword.setBackground(new Color(221, 160, 221));
         btnShowPassword.setFont(new Font("Times New Roman", Font.BOLD, 10));
         btnShowPassword.setBounds(420, 250, 80, 50);
         btnShowPassword.addActionListener(new ActionListener() {
@@ -130,6 +139,7 @@ public class DKI extends JFrame {
         contentPane.add(btnShowPassword);
         
         JButton btnShowConfirmPassword = new JButton("Show");
+        btnShowConfirmPassword.setBackground(new Color(221, 160, 221));
         btnShowConfirmPassword.setFont(new Font("Times New Roman", Font.BOLD, 10));
         btnShowConfirmPassword.setBounds(420, 310, 80, 50);
         btnShowConfirmPassword.addActionListener(new ActionListener() {
@@ -186,7 +196,7 @@ public class DKI extends JFrame {
 
             // Đọc phản hồi từ server và hiển thị nó
             String response = in.readLine();
-            System.out.println("Phản hồi từ máy chủ: " + response); // In ra để kiểm tra giá trị của response
+//            System.out.println("Phản hồi từ máy chủ: " + response); // In ra để kiểm tra giá trị của response
 
             if (response != null && response.equals("ADD_USER")) {
                 JOptionPane.showMessageDialog(DKI.this, "Đăng ký thành công");

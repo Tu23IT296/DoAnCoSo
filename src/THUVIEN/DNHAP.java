@@ -35,6 +35,7 @@ public class DNHAP extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 450, 300);
         contentPane = new JPanel();
+        contentPane.setBackground(new Color(72, 209, 204));
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
         contentPane.setLayout(null);
@@ -58,20 +59,24 @@ public class DNHAP extends JFrame {
         contentPane.add(MATKHAU_LABEL);
 
         TDN = new JTextField();
+        TDN.setFont(new Font("Times New Roman", Font.BOLD, 20));
         TDN.setBounds(170, 71, 256, 50);
         contentPane.add(TDN);
         TDN.setColumns(10);
 
         MATKHAU = new JPasswordField();
+        MATKHAU.setFont(new Font("Times New Roman", Font.BOLD, 20));
         MATKHAU.setBounds(170, 130, 256, 50);
         contentPane.add(MATKHAU);
 
         JButton DANGNHAP = new JButton("Đăng nhập");
+        DANGNHAP.setBackground(new Color(0, 250, 154));
         DANGNHAP.setFont(new Font("Times New Roman", Font.BOLD, 20));
         DANGNHAP.setBounds(170, 190, 256, 50);
         contentPane.add(DANGNHAP);
 
         JButton DANGKY = new JButton("Đăng ký");
+        DANGKY.setBackground(new Color(0, 250, 154));
         DANGKY.setFont(new Font("Times New Roman", Font.BOLD, 20));
         DANGKY.setBounds(10, 190, 150, 50);
         contentPane.add(DANGKY);
@@ -109,7 +114,7 @@ public class DNHAP extends JFrame {
 
             // Gửi lệnh DNHAP đến server
             out.println("DNHAP");
-
+            
             // Gửi thông tin đăng nhập đến server
             out.println(username); // Gửi tên người dùng
             out.println(password); // Gửi mật khẩu
@@ -128,7 +133,6 @@ public class DNHAP extends JFrame {
                     setVisible(false);
                 } else if (response.equals("LOGIN_USER")) {
                     // Chuyển hướng sang MSACH
-                    // Gửi thông tin tài khoản đến MSACH
                     MSACH msach = new MSACH(username);
                     msach.setVisible(true);
                     setVisible(false);

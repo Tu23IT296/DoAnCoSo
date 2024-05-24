@@ -31,6 +31,7 @@ import javax.swing.table.DefaultTableModel;
 
 import SQL.DatabaseConnection;
 import javax.swing.SwingConstants;
+import java.awt.Color;
 
 public class MSACH extends JFrame {
 
@@ -54,13 +55,14 @@ public class MSACH extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 1100, 510);
         contentPane = new JPanel();
+        contentPane.setBackground(new Color(0, 255, 255));
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         setContentPane(contentPane);
         contentPane.setLayout(null);
         
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(201, 33, 636, 402);
+        scrollPane.setBounds(201, 33, 636, 410);
         contentPane.add(scrollPane);
 
         table = new JTable();
@@ -126,6 +128,7 @@ public class MSACH extends JFrame {
         });
 
         JButton btnNewButton = new JButton("MƯỢN SÁCH");
+        btnNewButton.setBackground(new Color(144, 238, 144));
         btnNewButton.setFont(new Font("Times New Roman", Font.BOLD, 20));
         btnNewButton.setBounds(10, 192, 181, 35);
         contentPane.add(btnNewButton);
@@ -134,31 +137,25 @@ public class MSACH extends JFrame {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow != -1) {
                     int bookId = (int) table.getValueAt(selectedRow, 0);
-                    Date borrowDate = new Date();
-                    Time borrowTime = new Time(System.currentTimeMillis());
 
-                    if (addBorrowInfo(username, bookId, borrowDate, borrowTime)) {
-                        JOptionPane.showMessageDialog(contentPane, "Mượn sách thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    // Kiểm tra sự tồn tại của sách trong cơ sở dữ liệu
+                    if (isBookAvailable(bookId)) {
+                        Date borrowDate = new Date();
+                        Time borrowTime = new Time(System.currentTimeMillis());
+
+                        if (addBorrowInfo(username, bookId, borrowDate, borrowTime)) {
+                            JOptionPane.showMessageDialog(contentPane, "Mượn sách thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(contentPane, "Đã xảy ra lỗi khi mượn sách.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        }
                     } else {
-                        JOptionPane.showMessageDialog(contentPane, "Đã xảy ra lỗi khi mượn sách.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(contentPane, "Sách này đã được mượn.", "Thông báo", JOptionPane.WARNING_MESSAGE);
                     }
                 } else {
                     JOptionPane.showMessageDialog(contentPane, "Vui lòng chọn một cuốn sách để mượn.", "Thông báo", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
-        
-        JButton CHAT = new JButton("CHAT");
-        CHAT.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Open the CHATUSER window
-                CHATUSER chatWindow = new CHATUSER(username);
-                chatWindow.setVisible(true);
-            }
-        });
-        CHAT.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        CHAT.setBounds(10, 237, 181, 35);
-        contentPane.add(CHAT);
         
         JLabel lblTime = new JLabel("");
         lblTime.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -182,7 +179,9 @@ public class MSACH extends JFrame {
         });
         updateTimeThread.start();
 
-        Name = new JLabel("Welcome, " + username);
+        Name = new JLabel(username);
+        Name.setFont(new Font("Times New Roman", Font.BOLD, 35));
+        Name.setHorizontalAlignment(SwingConstants.CENTER);
         Name.setBounds(10, 56, 171, 125);
         contentPane.add(Name);
         
@@ -192,6 +191,7 @@ public class MSACH extends JFrame {
         textField.setColumns(10);
         
         JButton btnNewButton1 = new JButton("TÌM KIẾM");
+        btnNewButton1.setBackground(new Color(144, 238, 144));
         btnNewButton1.setFont(new Font("Times New Roman", Font.BOLD, 16));
         btnNewButton1.setBounds(668, 10, 159, 23);
         contentPane.add(btnNewButton1);
@@ -207,10 +207,11 @@ public class MSACH extends JFrame {
         });
 
         AnhBia = new JLabel("New label");
-        AnhBia.setBounds(836, 33, 240, 416);
+        AnhBia.setBounds(836, 33, 240, 388);
         contentPane.add(AnhBia);
         
         JButton btnLmMi = new JButton("LÀM MỚI");
+        btnLmMi.setBackground(new Color(144, 238, 144));
         btnLmMi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 displayData("SELECT * FROM books");
@@ -220,19 +221,36 @@ public class MSACH extends JFrame {
         btnLmMi.setBounds(499, 10, 159, 23);
         contentPane.add(btnLmMi);
         
-        JLabel S1 = new JLabel("Sách sẽ được mượn trên hệ thống sẽ được thông báo đến với Boss nhưng khi trả sách phải đến quầy trả sách để được xác nhận trên hệ thống và thanh toán tiền mượn sách.\r\n");
-        S1.setBounds(201, 440, 636, 13);
-        contentPane.add(S1);
-        
-        JLabel S2 = new JLabel("HÃY LÀ NHỮNG CON NGƯỜI VĂN MINH KHI MƯỢN SACH !!!");
-        S2.setFont(new Font("Tahoma", Font.BOLD, 10));
-        S2.setHorizontalAlignment(SwingConstants.CENTER);
-        S2.setBounds(201, 459, 636, 13);
-        contentPane.add(S2);
+        JLabel lblNewLabel = new JLabel("Sách được mượn phải được trao trả tại quầy và thanh toán tiền mượn.");
+        lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
+        lblNewLabel.setBounds(201, 450, 636, 23);
+        contentPane.add(lblNewLabel);
+
+        Thread movingTextThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int x = 201; // Vị trí ban đầu của dòng chữ
+                while (true) {
+                    lblNewLabel.setBounds(x, 450, 636, 23);
+                    try {
+                        Thread.sleep(10); // Điều chỉnh tốc độ di chuyển ở đây
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    x--; // Di chuyển vị trí của dòng chữ sang trái
+                    if (x + lblNewLabel.getWidth() < 0) {
+                        x = contentPane.getWidth(); // Reset vị trí khi dòng chữ di chuyển hết màn hình
+                    }
+                    contentPane.revalidate(); // Cập nhật lại contentPane để hiển thị lại dòng chữ
+                    contentPane.repaint();
+                }
+            }
+        });
+        movingTextThread.start();
 
         displayData("SELECT * FROM books"); // Hiển thị dữ liệu ban đầu
     }
-
+    
     private void displayData(String query) {
         try {
             Connection conn = DatabaseConnection.getConnection();
@@ -263,7 +281,6 @@ public class MSACH extends JFrame {
             e.printStackTrace();
         }
     }
-
     private ImageIcon loadImageForBook(String bookTitle) {
         String imagePath = "src/image/" + bookTitle + ".jpeg";
         File imageFile = new File(imagePath);
@@ -274,11 +291,9 @@ public class MSACH extends JFrame {
             return new ImageIcon("src/image/Chưa-cập-nhập-hình-ảnh.jpeg");
         }
     }
-
     private void adjustImageSize(ImageIcon imageIcon) {
         AnhBia.setIcon(new ImageIcon(imageIcon.getImage().getScaledInstance(AnhBia.getWidth(), AnhBia.getHeight(), java.awt.Image.SCALE_SMOOTH)));
     }
-
     private boolean addBorrowInfo(String username, int bookId, Date borrowDate, Time borrowTime) {
         try {
             Connection conn = DatabaseConnection.getConnection();
@@ -318,7 +333,6 @@ public class MSACH extends JFrame {
             return false;
         }
     }
-
  // Phương thức hiển thị username
     private void displayUsername() {
         String query = "SELECT username FROM users WHERE email = ? OR phone = ?";
@@ -331,7 +345,7 @@ public class MSACH extends JFrame {
 
             if (rs.next()) {
                 String fetchedUsername = rs.getString("username");
-                Name.setText("Welcome, " + fetchedUsername); // Hiển thị username
+                Name.setText(fetchedUsername); // Hiển thị username
             } else {
                 // Handle case when no username is found for the provided email or phone number
                 Name.setText("Welcome, User");
@@ -344,5 +358,24 @@ public class MSACH extends JFrame {
             ex.printStackTrace();
             // Handle any exceptions
         }
+    }
+    private boolean isBookAvailable(int bookId) {
+        try {
+            Connection conn = DatabaseConnection.getConnection();
+            String query = "SELECT * FROM UserBooks WHERE BookId = ?";
+
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setInt(1, bookId);
+                ResultSet rs = ps.executeQuery();
+
+                // Nếu có bất kỳ kết quả nào trả về, sách đã được mượn
+                if (rs.next()) {
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true; // Sách có sẵn để mượn
     }
 }
