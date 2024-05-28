@@ -30,6 +30,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import SQL.DatabaseConnection;
 import java.awt.Color;
+import java.io.IOException;
+import XML.xml;
+
 
 public class QLI extends JFrame {
 
@@ -381,6 +384,8 @@ public class QLI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // Gọi phương thức displayUserBooks() để làm mới bảng BMUON
                 displayUserBooks();
+                // Gọi class xml để tạo và lưu file XML
+                xml.main(null);
             }
         });
         LMBANGMUON.setFont(new Font("Times New Roman", Font.BOLD, 20));
