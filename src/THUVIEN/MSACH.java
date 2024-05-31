@@ -225,6 +225,18 @@ public class MSACH extends JFrame {
         lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
         lblNewLabel.setBounds(201, 450, 636, 23);
         contentPane.add(lblNewLabel);
+        
+        JButton btnTrSch = new JButton("TRẢ SÁCH");
+        btnTrSch.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        btnTrSch.setBackground(new Color(144, 238, 144));
+        btnTrSch.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                returnAllBooks(username);
+            }
+        });
+
+        btnTrSch.setBounds(10, 237, 181, 35);
+        contentPane.add(btnTrSch);
 
         Thread movingTextThread = new Thread(new Runnable() {
             @Override
@@ -333,6 +345,68 @@ public class MSACH extends JFrame {
             return false;
         }
     }
+   private void returnAllBooks(String username) {
+    try {
+        Connection conn = DatabaseConnection.getConnection();
+        String getUserIdQuery = "SELECT username FROM users WHERE email = ? OR phone = ?";
+        String userId = null;
+
+        // Tìm username dựa trên email hoặc số điện thoại
+        try (PreparedStatement ps = conn.prepareStatement(getUserIdQuery)) {
+            ps.setString(1, username);
+            ps.setString(2, username);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                userId = rs.getString("username");
+            }
+            rs.close();
+        }
+
+        // Nếu userId không tìm thấy, return
+        if (userId == null) {
+            return;
+        }
+
+        // Lấy thời gian hiện tại để ghi vào cơ sở dữ liệu
+        Date returnDate = new Date();
+        Time returnTime = new Time(System.currentTimeMillis());
+
+        // Lấy danh sách các sách mà người dùng đã mượn
+        String getBorrowedBooksQuery = "SELECT BookId FROM UserBooks WHERE UserId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(getBorrowedBooksQuery)) {
+            ps.setString(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            // Trả tất cả các sách
+            while (rs.next()) {
+                int bookId = rs.getInt("BookId");
+
+                // Chèn thông tin trả sách vào bảng trasach
+                String insertQuery = "INSERT INTO trasach (UserId, BookId, LendDate, LendTime) VALUES (?, ?, ?, ?)";
+                try (PreparedStatement psInsert = conn.prepareStatement(insertQuery)) {
+                    psInsert.setString(1, userId);
+                    psInsert.setInt(2, bookId);
+                    psInsert.setDate(3, new java.sql.Date(returnDate.getTime()));
+                    psInsert.setTime(4, returnTime);
+                    psInsert.executeUpdate();
+                }
+            }
+
+            // Xóa thông tin mượn sách từ bảng UserBooks
+            String deleteQuery = "DELETE FROM UserBooks WHERE UserId = ?";
+            try (PreparedStatement psDelete = conn.prepareStatement(deleteQuery)) {
+                psDelete.setString(1, userId);
+                psDelete.executeUpdate();
+            }
+
+            JOptionPane.showMessageDialog(contentPane, "Đã trả tất cả sách thành công.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        }
+    } catch (Exception ex) {
+        ex.printStackTrace();
+    }
+}
+
  // Phương thức hiển thị username
     private void displayUsername() {
         String query = "SELECT username FROM users WHERE email = ? OR phone = ?";

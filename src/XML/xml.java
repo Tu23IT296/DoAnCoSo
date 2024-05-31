@@ -23,10 +23,14 @@ public class xml {
             connection = DriverManager.getConnection(url, userName, password); // Kết nối đến cơ sở dữ liệu
             statement = connection.createStatement(); // Tạo một Statement
 
-            // Truy vấn SQL để lấy dữ liệu từ bảng UserBooks và thông tin tên sách từ bảng Books
-            String sql = "SELECT UserBooks.UserId, Books.title, UserBooks.BorrowDate, UserBooks.BorrowTime " +
+            // Truy vấn SQL để lấy dữ liệu từ hai bảng và thêm trạng thái mượn sách
+            String sql = "SELECT UserBooks.UserId, Books.title AS bookTitle, UserBooks.BorrowDate, UserBooks.BorrowTime, 'Chưa trả' AS TinhTrang " +
                          "FROM UserBooks " +
-                         "INNER JOIN Books ON UserBooks.BookId = Books.id";
+                         "INNER JOIN Books ON UserBooks.BookId = Books.id " +
+                         "UNION " +
+                         "SELECT trasach.UserId, Books.title AS bookTitle, trasach.LendDate, trasach.LendTime, CONCAT('Đã trả - ', trasach.LendDate, ' ', trasach.LendTime) AS TinhTrang " +
+                         "FROM trasach " +
+                         "INNER JOIN Books ON trasach.BookId = Books.id";
             ResultSet resultSet = statement.executeQuery(sql); // Thực thi truy vấn và lấy kết quả
 
             // Tạo tên tệp để lưu tất cả các bản ghi
@@ -38,9 +42,10 @@ public class xml {
             // Duyệt qua từng bản ghi trong ResultSet
             while (resultSet.next()) {
                 String userId = resultSet.getString("UserId");
-                String bookTitle = resultSet.getString("title");
+                String bookTitle = resultSet.getString("bookTitle");
                 java.sql.Date borrowDate = resultSet.getDate("BorrowDate");
                 java.sql.Time borrowTime = resultSet.getTime("BorrowTime");
+                String status = resultSet.getString("TinhTrang");
 
                 // Ghi thông tin của mỗi bản ghi vào file XML
                 writer.write("\t<userBook>\n");
@@ -48,6 +53,7 @@ public class xml {
                 writer.write("\t\t<bookTitle>" + bookTitle + "</bookTitle>\n");
                 writer.write("\t\t<borrowDate>" + borrowDate + "</borrowDate>\n");
                 writer.write("\t\t<borrowTime>" + borrowTime + "</borrowTime>\n");
+                writer.write("\t\t<status>" + status + "</status>\n");
                 writer.write("\t</userBook>\n");
             }
 

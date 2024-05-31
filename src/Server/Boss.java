@@ -40,7 +40,6 @@ public class Boss {
         try (Connection connection = DatabaseConnection.getConnection()) {
             // Check if the data already exists in the Boss table
             String queryBoss = "SELECT * FROM Boss WHERE (Phone = ? OR Email = ?) AND Password = ?";
-            System.out.println("Query Boss: " + queryBoss); // In câu lệnh SQL
             PreparedStatement statementBoss = connection.prepareStatement(queryBoss);
             statementBoss.setString(1, phoneNumber);
             statementBoss.setString(2, email);
